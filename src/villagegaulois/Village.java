@@ -29,7 +29,7 @@ public class Village {
 				}
 			}
 			if(etalTrouve) {
-				return i;
+				return i-1;
 			}
 			else {
 				return -1;
@@ -39,7 +39,7 @@ public class Village {
 		private Etal[] trouverEtals(String produit) {
 			int nbEtalsProduits = 0;
 			for(int i = 0; i<etals.length ; i++) {
-				if(etals[i].contientProduit(produit)) {
+				if(etals[i].isEtalOccupe() && etals[i].contientProduit(produit)) {
 					nbEtalsProduits++;
 				}
 			}
@@ -48,7 +48,7 @@ public class Village {
 			int indiceEtalsTrouves = 0;
 			
 			for (int i= 0; i<etals.length; i++) {
-				if(etals[i].contientProduit(produit)) {
+				if(etals[i].isEtalOccupe() && etals[i].contientProduit(produit)) {
 					etalsTrouves[indiceEtalsTrouves] = etals[i];
 					indiceEtalsTrouves++;
 				}
@@ -155,7 +155,45 @@ public class Village {
 	}
 	
 	public String installerVendeur(Gaulois vendeur, String produit, int nbProduit) {
+		StringBuilder chaine = new StringBuilder();
+		chaine.append(vendeur.getNom() + " cherche un endroit pour vendre " + nbProduit + " " + produit + ".\n");
+		int indiceEtal = marche.trouverEtalLibre();
+		marche.utiliserEtal(indiceEtal, vendeur, produit, nbProduit);
+		chaine.append("Le vendeur " + vendeur.getNom() + " vend des " + produit + " à l'étal n°" + (indiceEtal+1) + ".\n");
+		return chaine.toString();
 		
+	}
+	
+	public String rechercherVendeursProduit(String produit) {
+		StringBuilder chaine = new StringBuilder();
+		Etal[] etals = marche.trouverEtals(produit);
+		switch(etals.length) {
+		case 0: 
+			chaine.append("Il n'y a pas de vendeur qui propose des "+ produit +" au marché.\n");
+			break;
+		case 1:
+			chaine.append("Seul le vendeur " + etals[0].getVendeur().getNom() + " propose des " + produit + " au marché\n");
+			break;
+		default:
+			chaine.append("Les vendeurs qui propsent des " + produit + " sont :\n");
+			for(int i = 0; i<etals.length ; i++) {
+				chaine.append("- " + etals[i].getVendeur().getNom()+ "\n");
+			}
+			break;
+		}	
+		return chaine.toString();
+	}
+	
+	public Etal rechercherEtal(Gaulois vendeur) {
+		return marche.trouverVendeur(vendeur);		
+	}
+	
+	public String partirVendeur(Gaulois vendeur) {
+		StringBuilder chaine = new StringBuilder();
+		Etal etal = rechercherEtal(vendeur);
+		
+		chaine.append(etal.libererEtal());
+		return chaine.toString();
 	}
 	
 }

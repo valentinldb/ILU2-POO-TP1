@@ -77,19 +77,19 @@ public class Village {
 		
 		private String afficherMarcher() {
 			int nbLibre = 0;
-			String ensembleEtals = "";
+			StringBuilder ensembleEtals = new StringBuilder();
 			for (int i = 0; i<etals.length; i++) {
 				if(!etals[i].isEtalOccupe()) {
 					nbLibre++;
 				}
 				else {
-					ensembleEtals += etals[i].afficherEtal();
+					ensembleEtals.append(etals[i].afficherEtal());
 				}
 			}
 			
-			ensembleEtals += "Il reste " + nbLibre + " étals non utilisés dans le marché.\n";
+			ensembleEtals.append("Il reste " + nbLibre + " étals non utilisés dans le marché.\n");
 			
-			return ensembleEtals;
+			return ensembleEtals.toString();
 		}
 		
 		
@@ -139,7 +139,11 @@ public class Village {
 		return null;
 	}
 
-	public String afficherVillageois() {
+	public String afficherVillageois() throws VillageSansChefException {
+		if(this.chef == null) {
+			throw new VillageSansChefException();
+		}
+		
 		StringBuilder chaine = new StringBuilder();
 		if (nbVillageois < 1) {
 			chaine.append("Il n'y a encore aucun habitant au village du chef "
@@ -194,6 +198,13 @@ public class Village {
 		
 		chaine.append(etal.libererEtal());
 		return chaine.toString();
+	}
+	
+	public String afficherMarche() {
+		StringBuilder result = new StringBuilder();
+		result.append("Le marché du village \"" + this.nom + "\" possède plusieurs étals :\n");
+		result.append(this.marche.afficherMarcher());
+		return result.toString();
 	}
 	
 }

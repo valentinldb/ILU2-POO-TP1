@@ -27,14 +27,19 @@ public class Etal {
 
 	public String libererEtal() {
 		etalOccupe = false;
-		StringBuilder chaine = new StringBuilder(
-				"Le vendeur " + vendeur.getNom() + " quitte son étal, ");
-		int produitVendu = quantiteDebutMarche - quantite;
-		if (produitVendu > 0) {
+		StringBuilder chaine = new StringBuilder();
+		try {
 			chaine.append(
-					"il a vendu " + produitVendu + " parmi " + produit + ".\n");
-		} else {
-			chaine.append("il n'a malheureusement rien vendu.\n");
+					"Le vendeur " + vendeur.getNom() + " quitte son étal, ");
+			int produitVendu = quantiteDebutMarche - quantite;
+			if (produitVendu > 0) {
+				chaine.append(
+						"il a vendu " + produitVendu + " " + produit + " parmi les " + produitVendu + " qu'il voulait vendre.\n");
+			} else {
+				chaine.append("il n'a malheureusement rien vendu.\n");
+			}
+		} catch(NullPointerException e) {
+			 chaine = new StringBuilder("L'étal était déjà libre.");
 		}
 		return chaine.toString();
 	}
@@ -48,12 +53,21 @@ public class Etal {
 	}
 
 	public String acheterProduit(int quantiteAcheter, Gaulois acheteur) {
-		if (etalOccupe) {
+		//if (etalOccupe) {
+		if(quantiteAcheter < 1) {
+			throw new IllegalArgumentException("La quantité doit être positive.");
+		}
+		
+		if(!this.isEtalOccupe()) {
+			throw new IllegalStateException("L'étal doit être occupée.");
+		}
+		
+		try {
 			StringBuilder chaine = new StringBuilder();
 			chaine.append(acheteur.getNom() + " veut acheter " + quantiteAcheter
 					+ " " + produit + " à " + vendeur.getNom());
 			if (quantite == 0) {
-				chaine.append(", malheureusement il n'y en a plus !");
+				chaine.append(", malheureusement il n'y en a plus !\n");
 				quantiteAcheter = 0;
 			}
 			if (quantiteAcheter > quantite) {
@@ -70,8 +84,11 @@ public class Etal {
 						+ vendeur.getNom() + "\n");
 			}
 			return chaine.toString();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return "";
 		}
-		return null;
+		//return null;
 	}
 
 	public boolean contientProduit(String produit) {
